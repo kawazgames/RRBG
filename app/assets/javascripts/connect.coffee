@@ -3,6 +3,8 @@
 # connect wrapper
 ###
 
+exports = this
+
 CellType =
   "#": 0
   ".": 1
@@ -28,7 +30,7 @@ class ConnectTest
     "#...##...#",
     "#..#..#..#",
     "#..#..#..#",
-    "#........#",
+    "#.....X..#",
     "#.#.###..#",
     "#...#....#",
     "##########"]
@@ -51,10 +53,7 @@ class ConnectTest
       @error.push "invalid id"
       return
 
-    # lack of check for invalid position
-    @virus[data.virus.position.y][data.virus.position.x] = true
-
-    result = @step()
+    result = @step(data.virus.position)
 
     f({ state: "playing", game_stage: result })
 
@@ -73,7 +72,7 @@ class ConnectTest
     return 3 if x == 1
     4
 
-  step: ->
+  step: (place) ->
     result =
       virus: []
       newvirus: []
@@ -95,7 +94,10 @@ class ConnectTest
         result.virus.push({ y:v.y, x:v.x, way:@get_way(v,t) })
         duplicate_at(t.y, t.x)
       else
-        result.virus.push({ y:v.y, x:v.x, way:@get_way(v,t) })
+        result.virus.push({ y:v.y, x:v.x, way:4 })
+
+    @virus[place.y][place.x] = true
+    result.newvirus.push(place)
 
     for v in @leukocyte
       r = { y:v.y, x:v.x, way: [] }
@@ -140,6 +142,11 @@ class Connect
       data: data
       success: f
     @request options
+
+exports.CellType = CellType
+exports.Way = Way
+exports.ConnectTest = ConnectTest
+exports.Connect = Connect
 
 # Usage
 # connect = new Connect (res) ->
