@@ -4,17 +4,13 @@
 ###
 
 class Connect
-  constructor: () ->
+  constructor: (f) ->
     @error = []
     options =
       type: "get"
       url: "/game/new"
       data: null
-      success: (@data) =>
-      error: (error) =>
-        @error.push error
-        if confirm "通信エラー。再試行しますか？"
-          @request options
+      success: f
     @request options
   
   request: (options) ->
@@ -26,12 +22,20 @@ class Connect
       dataType: "json"
       success: ->
         options.success?()
-      error: ->
-        options.error?()
+      error: (error) =>
+        @error.push error
+        if confirm "通信エラー。再試行しますか？"
+          @request options
   
-  next_turn: (options) ->
+  next_turn: (data, f) ->
+    options =
+      type: "post"
+      url: "/game/next_turn"
+      data: data
+      success: f
     @request options
 
 # Usage
-# connect = new Connect (data) ->
-# connect.next_turn options
+# connect = new Connect (res) ->
+# connect.next_turn req, (res) ->
+

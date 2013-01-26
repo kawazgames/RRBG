@@ -11,3 +11,10 @@
  *= require_self
  *= require_tree .
  */
+body{
+  background:#eee;
+}
+#enchant-stage{
+  background:#fff;
+  margin:50px auto 10px;
+}
