@@ -123,7 +123,7 @@ class GameStage < ActiveRecord::Base
   def convert_step
     field = GameMap.where(game_stage_id: self.id).all
     # TODO lock for stage?
-    @enemys_lock = UserFungus.where(game_stage_id: self.id).all(lock: true)
+    @enemys_lock = UserFungus.where(game_stage_id: self.id, status: UserFungus::LIFE).all(lock: true)
     @enemys = Array.new(ONE_LINE).map{ Array.new(ONE_LINE, false) }
     @enemys_obj = Array.new(ONE_LINE).map{ Array.new(ONE_LINE, false) }
     @field = Array.new(ONE_LINE).map{ Array.new(ONE_LINE, false) }
@@ -143,7 +143,7 @@ class GameStage < ActiveRecord::Base
       @enemys[e.y][e.x] = true
       @enemys_obj[e.y][e.x] = e
     end
-    cleaner = EnemyLeukocyte.where(game_stage_id: self.id).all(lock: true)
+    cleaner = EnemyLeukocyte.where(game_stage_id: self.id, status: EnemyLeukocyte::LIFE).all(lock: true)
     @cleaner = []
     @cleaner_obj = Array.new(ONE_LINE).map{ Array.new(ONE_LINE, false) }
     cleaner.each do |e|
