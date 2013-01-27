@@ -4,6 +4,7 @@ RRBG::Application.routes.draw do
    get '/sessions/new', to: 'index#index', as: :new_user_session
    get '/users/auth/:provider/callback', to: 'authentications#callback'
  end
+ resources :games
   # The priority is based upon order of creation:
   # first created -> highest priority.
 
