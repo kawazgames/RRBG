@@ -11,10 +11,10 @@ class UserGame < ActiveRecord::Base
     }
   end
 
-  def next_turn(fungus_x, fungus_y)
+  def next_turn(fungus_y, fungus_x)
     responed = { GameStage::STATE_PLAYING => "playing", GameStage::STATE_GAMEOVER => "gameover" }
     game_stage = GameStage.where(id: self.game_stage_id).first
-    responed_stage = game_stage.set_and_step(fungus_x, fungus_y)
+    responed_stage = game_stage.set_and_step(fungus_y, fungus_x)
     @score = game_stage.get_score
     UserGame.transaction do
       ug = UserGame.find(self.id, lock: true)
