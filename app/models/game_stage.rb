@@ -7,6 +7,11 @@ class GameStage < ActiveRecord::Base
   WAY_RIGHT = 3
   WAY_STOP = 4
   ONE_LINE = 10
+
+  STATE_PLAYING = 0
+  STATE_GAMEOVER = 1
+  CLEAR_RATION = 30
+
   def self.create_copy_with_random
     size = Stage.count
     if size > 1
@@ -39,6 +44,12 @@ class GameStage < ActiveRecord::Base
   ############################################################
 
 
+  def play_status
+    fungus = UserFungus.where(game_stage_id: self.id).count(lock: "LOCK IN SHARE MODE")
+    return STATE_CLEAR if fungus >= CLEAR_RATION
+    return STATE_PLAYING
+  end
+
   def get_way (v,t)
     y = t[:y] - v[0]
     x = t[:x] - v[1]
@@ -63,9 +74,11 @@ class GameStage < ActiveRecord::Base
   end
 
   def set_and_step(y, x)
-    @new_fungus = UserFungus.create! game_stage: self, y: y, x: x
-    self.step()
-    self.convert_structure
+    self.transaction do
+      @new_fungus = UserFungus.create! game_stage: self, y: y, x: x
+      self.step()
+      self.convert_structure
+    end
   end
   def step()
 
