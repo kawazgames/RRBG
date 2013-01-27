@@ -6,8 +6,8 @@ class GameMap < ActiveRecord::Base
   START_GENERATION = 1
   MAX_GENERATION = 10
 
-  def convert_collection
-    maps = GameMap.where(game_stage_id: self.game_stage.id).all
+  def self.convert_collection game_stage_id
+    maps = GameMap.where(game_stage_id: game_stage_id).all
     maps.map do |m|
       {
         position: { x: m.x, y: m.y },
@@ -18,7 +18,7 @@ class GameMap < ActiveRecord::Base
   end
 
   def convert_object
-    if Map::MAP_TYPE_USER_FUNGS
+    if self.type == Map::MAP_TYPE_USER_FUNGS
     { 
       id: self.id,
       current_generation: START_GENERATION,
@@ -32,13 +32,9 @@ class GameMap < ActiveRecord::Base
   def convert_type
     enemy = self.enemy.where(x: self.x, y: self.y).first(lock: true)
     virus = self.virus.where(x: self.x, y: self.y).first(lock: true)
-    if enemy.nil? and virus.nil?
-      self.type
-    elsif enemy.nil?
-      Map::MAP_TYPE_USER_FUNGS
-    else
-      Map::MAP_TYPE_ENEMY_LEUKOCYTEL
-    end
+    return Map::MAP_TYPE_USER_FUNGS if enemy
+    return Map::MAP_TYPE_ENEMY_LEUKOCYTEL if virus
+    return self.type
   end
 
   def enemy

@@ -120,6 +120,7 @@ class Connect
     @request options
 
   request: (options) ->
+    console.log options
     $.ajax
       type: options.type
       url: options.url
@@ -127,6 +128,7 @@ class Connect
       cache: false
       dataType: "json"
       success: (data) ->
+        console.log data
         options.success?(data)
       error: (error) =>
         @error.push error
@@ -136,7 +138,7 @@ class Connect
   next_turn: (data, f) ->
     options =
       type: "post"
-      url: "/games/next_turn"
+      url: "/games/next_turn.json"
       data: data
       success: f
     @request options

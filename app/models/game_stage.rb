@@ -10,7 +10,7 @@ class GameStage < ActiveRecord::Base
 
   STATE_PLAYING = 0
   STATE_GAMEOVER = 1
-  CLEAR_RATION = 30
+  CLEAR_RATION = 70
 
   def self.create_copy_with_random
     size = Stage.count
@@ -35,7 +35,8 @@ class GameStage < ActiveRecord::Base
     map = GameMap.where(game_stage_id: self.id).all(lock: true)
     {
       id: self.id,
-      game_map: map.map{ |m| m.convert_collection }
+      game_map: GameMap.convert_collection(self.id)
+
     }
   end
 
@@ -46,7 +47,7 @@ class GameStage < ActiveRecord::Base
 
   def play_status
     fungus = UserFungus.where(game_stage_id: self.id).count(lock: "LOCK IN SHARE MODE")
-    return STATE_CLEAR if fungus >= CLEAR_RATION
+    return STATE_GAMEOVER if fungus >= CLEAR_RATION
     return STATE_PLAYING
   end
 
@@ -74,11 +75,11 @@ class GameStage < ActiveRecord::Base
   end
 
   def set_and_step(y, x)
-    self.transaction do
+    GameStage.transaction do
       @new_fungus = UserFungus.create! game_stage: self, y: y, x: x
       self.step()
-      self.convert_structure
     end
+    self.convert_structure
   end
   def step()
 
@@ -140,9 +141,11 @@ class GameStage < ActiveRecord::Base
       end
     end
     @enemys_lock.each do |e|
-      @enemys[e.y][e.x] = true
-      @enemys_obj[e.y][e.x] = e
-      UserFungus.create! game_stage: self, y: e.y, x: e.x
+      if e.y and e.x
+        @enemys[e.y][e.x] = true
+        @enemys_obj[e.y][e.x] = e
+        UserFungus.create! game_stage: self, y: e.y, x: e.x
+      end
     end
     cleaner = EnemyLeukocyte.where(game_stage_id: self.id, status: EnemyLeukocyte::LIFE).all(lock: true)
     @cleaner = []
