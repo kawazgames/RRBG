@@ -9,9 +9,14 @@ do ->
     'assets/leukocyte.png'
     'assets/space.png'
     'assets/wall.png'
+    'assets/title.png'
+    'assets/virus_move.wav'
+    'assets/leukocyte_move.wav'
+    'assets/item_get.wav'
   ]
 
   Size = 64
+  Slide = 90
 
   game = setScene = undefined
 
@@ -64,22 +69,47 @@ do ->
   initTop = ->
     scene = new Scene()
 
-    title = createLabel("RRBG(仮)", 200, 300, 16, '#666')
-    start = createLabel("GAME START", 200, 320, 16, '#666')
-    start.addEventListener Event.TOUCH_END, -> setScene('main')
+    title = createSprite(800, 600, 0, 0, assets('title.png'))
+    title.addEventListener Event.TOUCH_END, -> setScene('main')
+
+    ranking = (createLabel("loading...", 150 + Math.floor(i/5)*350,
+        350 + (i%5)*25, 16, '#333') for i in [0...10])
 
     scene.init = ->
+      $.ajax
+        type: 'get'
+        url: '/games/ranking'
+        data: null
+        cache: false
+        dataType: "json"
+        success: (data) ->
+          for v in data.ranking
+            ranking[v.rank-1].text = "#{v.rank}: @#{v.screen_name} .. #{v.score}"
+
     scene.addChild(title)
-    scene.addChild(start)
+    scene.addChild(v) for v in ranking
     scene
 
   initResult = ->
     scene = new Scene()
 
-    title = createLabel("Result", 200, 300, 16, '#666')
+    title = createLabel("Result", 200, 250, 16, '#666')
+    score = createLabel("SCORE", 200, 280, 16, '#666')
+    retry = createLabel("retry", 550, 280, 16, '#666')
+    retry.addEventListener Event.TOUCH_END, -> setScene('main')
+    back = createLabel("back", 550, 310, 16, '#666')
+    back.addEventListener Event.TOUCH_END, -> setScene('top')
 
-    scene.init = ->
+    scene.score = score
+    scene.init = (s) ->
+      scene.score.text = s
+      title.opacity = score.opacity = 0.0
+      title.tl.fadeIn(10)
+      score.tl.fadeIn(10)
     scene.addChild(title)
+    scene.addChild(score)
+    scene.addChild(retry)
+    scene.addChild(back)
     scene
 
   initMain = ->
@@ -87,6 +117,7 @@ do ->
     id = connect = undefined
     group = groupEntity = undefined
     base = undefined
+    score = createLabel("SCORE", 20, 20, 16, '#666')
     click = false
 
     addGroup = (g, x, y, image, alpha = 1.0) ->
@@ -129,7 +160,7 @@ do ->
             when 3
               addGroup(groupEntity, v.position.x, v.position.y, assets('virus.png'))
 
-      group.x = (Screen.width - (base.x+1) * Size)/2
+      group.x = (Screen.width - (base.x+1) * Size)/2 + Slide
       group.y = (Screen.height - (base.y+1) * Size)/2
       groupEntity.x = group.x
       groupEntity.y = group.y
@@ -138,29 +169,44 @@ do ->
     scene.addEventListener Event.TOUCH_END, (e) =>
       return if !click
       target =
-        x: Math.floor((e.localX - base.x)/Size-1)
-        y: Math.floor((e.localY - base.y)/Size)
+        x: Math.floor((e.localX - group.x)/Size)
+        y: Math.floor((e.localY - group.y)/Size)
       connect.next_turn {id: id, virus: {position: target}}, (data) =>
         clearGroup()
         field = (new Array(base.x+1) for x in new Array(base.y+1))
         click = false
+        assets("virus_move.wav").play()
+        scene.tl.delay(30).then ->
+          assets("leukocyte_move.wav").play()
 
         for v in data.game_stage.virus
           t = addGroup(groupEntity, v.x, v.y, assets('virus.png'))
           s = wayMove(v, v.way)
           field[s.x][s.y] = t
-          t.tl.moveTo(s.x*Size, s.y*Size, 10)
+          t.tl.moveTo(s.x*Size, s.y*Size, 15)
+
         for v in data.game_stage.newvirus
           t = addGroup(groupEntity, v.x, v.y, assets('virus.png'), 0.0)
-          t.tl.delay(10).fadeIn(10)
-        for v in data.game_stage.leukocyte
+          t.tl.delay(15).fadeIn(15)
+
+        for v,i in data.game_stage.leukocyte
           t = addGroup(groupEntity, v.x, v.y, assets('leukocyte.png'))
+          t.tl.delay(30)
           for way in v.way
             v = wayMove(v, way)
             field[v.x][v.y]?.tl.fadeOut(10)
-            t.tl.moveTo(v.x*Size, v.y*Size, 2).then ->
-              click = true
+            t.tl.moveTo(v.x*Size, v.y*Size, 2)
 
+          if i == 0
+            t.tl.then ->
+              score.text = "SCORE #{data.score}"
+              data.state = "gameover"
+              if data.state == "gameover"
+                setScene('result', score.text)
+              else
+                click = true
+
+    scene.addChild score
     scene
 
   window.onload = ->
@@ -175,12 +221,12 @@ do ->
       scenes.main = initMain()
       scenes.result = initResult()
 
-      setScene = (name) ->
+      setScene = (name, args ...) ->
         frame = 0
-        scenes[name].init()
+        scenes[name].init(args ...)
         game.replaceScene scenes[name]
 
-      setScene('title')
+      setScene('top')
 
     game.start()
 
