@@ -17,6 +17,7 @@ class UserGame < ActiveRecord::Base
     responed_stage = game_stage.set_and_step(fungus_x, fungus_y)
     {
       state: responed[game_stage.play_status],
+      score: game_stage.get_score,
       game_stage: responed_stage
     }
   end

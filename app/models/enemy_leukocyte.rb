@@ -5,11 +5,10 @@ class EnemyLeukocyte < ActiveRecord::Base
 
   LIFE = 0
   DIED = 1
-  def before_save
+  before_save do
     if self.status.nil?
       self.status = LIFE
     end
-    true
   end
 #  validates :x_y, user_game_exists_user_fungus: true
 #  validates :x_y, user_game_exists_wall: true

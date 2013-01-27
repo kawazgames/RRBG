@@ -142,6 +142,7 @@ class GameStage < ActiveRecord::Base
     @enemys_lock.each do |e|
       @enemys[e.y][e.x] = true
       @enemys_obj[e.y][e.x] = e
+      UserFungus.create! game_stage: self, y: e.y, x: e.x
     end
     cleaner = EnemyLeukocyte.where(game_stage_id: self.id, status: EnemyLeukocyte::LIFE).all(lock: true)
     @cleaner = []
@@ -150,7 +151,6 @@ class GameStage < ActiveRecord::Base
       @cleaner << {i: e.y, j: e.x, object_id: e.id}
       @cleaner_obj[e.y][e.x] = e
     end
-    p @cleaner
     p @cleaner_obj
   end
 
@@ -160,5 +160,11 @@ class GameStage < ActiveRecord::Base
     leukocyte: @moved_cleaner,
     virus: @moved_enemy
   }
+  end
+
+  def get_score
+    fungus = UserFungus.where(game_stage_id: self.id, status: UserFungus::LIFE).count(lock: true)
+    leukocyte = EnemyLeukocyte.where(game_stage_id: self.id, status: EnemyLeukocyte::LIFE).count(lock: true)
+    return ((leukocyte) * (fungus * 1000 / (ONE_LINE * ONE_LINE))) + 20
   end
 end
