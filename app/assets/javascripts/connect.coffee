@@ -3,8 +3,6 @@
 # connect wrapper
 ###
 
-exports = this
-
 CellType =
   "#": 0
   ".": 1
@@ -128,8 +126,8 @@ class Connect
       data: options.data
       cache: false
       dataType: "json"
-      success: ->
-        options.success?()
+      success: (data) ->
+        options.success?(data)
       error: (error) =>
         @error.push error
         if confirm "通信エラー。再試行しますか？"
@@ -142,6 +140,8 @@ class Connect
       data: data
       success: f
     @request options
+
+exports = this
 
 exports.CellType = CellType
 exports.Way = Way
