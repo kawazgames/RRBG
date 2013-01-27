@@ -8,4 +8,9 @@ class GamesController < ApplicationController
 
     respond_with gs.convert_collection
   end
+
+  def next_turn
+    ug =  UserGame.where(id: params[:id], user_id: current_user.id).first
+    respond_with ug.next_turn(params[:virus][:y],params[:virus][:x])
+  end
 end
