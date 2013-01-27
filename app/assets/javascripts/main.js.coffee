@@ -142,11 +142,12 @@ do ->
     scene.init = ->
       clearGroup(true)
 
-      connect = new ConnectTest (data) ->
+      connect = new Connect (data) ->
+        
         id = data.id
         base = x: 0, y: 0
 
-        for v in data.game_map.reduce((a,b) -> a.concat(b))
+        for v in data.game_map
           base.x = v.position.x if base.x < v.position.x
           base.y = v.position.y if base.y < v.position.y
 
@@ -160,11 +161,11 @@ do ->
             when 3
               addGroup(groupEntity, v.position.x, v.position.y, assets('virus.png'))
 
-      group.x = (Screen.width - (base.x+1) * Size)/2 + Slide
-      group.y = (Screen.height - (base.y+1) * Size)/2
-      groupEntity.x = group.x
-      groupEntity.y = group.y
-      click = true
+        group.x = (Screen.width - (base.x+1) * Size)/2 + Slide
+        group.y = (Screen.height - (base.y+1) * Size)/2
+        groupEntity.x = group.x
+        groupEntity.y = group.y
+        click = true
 
     scene.addEventListener Event.TOUCH_END, (e) =>
       return if !click
@@ -200,7 +201,6 @@ do ->
           if i == 0
             t.tl.then ->
               score.text = "SCORE #{data.score}"
-              data.state = "gameover"
               if data.state == "gameover"
                 setScene('result', score.text)
               else
