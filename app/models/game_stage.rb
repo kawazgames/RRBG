@@ -1,3 +1,4 @@
+require 'yaml'
 class GameStage < ActiveRecord::Base
 
   WAY_UP = 0
@@ -5,6 +6,7 @@ class GameStage < ActiveRecord::Base
   WAY_LEFT = 2
   WAY_RIGHT = 3
   WAY_STOP = 4
+  ONE_LINE = 10
   def self.create_copy_with_random
     size = Stage.count
     if size > 1
@@ -38,8 +40,8 @@ class GameStage < ActiveRecord::Base
 
 
   def get_way (v,t)
-    y = t.y - v.y
-    x = t.x - v.x
+    y = t[:y] - v[0]
+    x = t[:x] - v[1]
     return 0 if y == -1
     return 1 if y == 1
     return 2 if x == -1
@@ -60,52 +62,90 @@ class GameStage < ActiveRecord::Base
     @enemys[t[0]][t[1]] = true if t
   end
 
+  def set_and_step(y, x)
+    @new_fungus = UserFungus.create! game_stage: self, y: y, x: x
+    self.step()
+    self.convert_structure
+  end
   def step()
 
-    @enemys = self.convert_enemy_step
+    self.convert_step
 
+    @moved_enemy = []
     ls = @enemys.each_with_index.map {|x,i|
       x.each_with_index.map {|v,j|
         {i:i, j:j, c:near_spaces(i,j).length} if v
       }.select{|x| x}
     }.reduce(&:+)
-
     ls.sort_by{|a| a[:c] }.each{|x|
       t = near_spaces(x[:i], x[:j]).sample(1)[0]
       if t
         @enemys[t[0]][t[1]] = true
         @enemys[x[:i]][x[:j]] = false
-
+        @enemys_obj[x[:i]][x[:j]].update_attributes(y: t[0], x: t[1])
+        @moved_enemy << { y:t[0], x:t[1], way: self.get_way(t,{y: x[:i], x: x[:j]}) }
         duplicate_at(t[0], t[1])
       end
     }
 
+
+    @moved_cleaner = []
+    nv = {}
     @cleaner.each do |v|
       @enemys[v[:i]][v[:j]] = false
       10.times do
         t = nears(v[:i], v[:j]).select{|x| !@field[x[0]][x[1]] }.sample(1)[0]
-        v[:i] = t[0]
-        v[:j] = t[1]
-        @enemys[v[:i]][v[:j]] = false
+        nv[:i] = t[0]
+        nv[:j] = t[1]
+        if @enemys_obj[nv[:i]][nv[:j]]
+          @enemys[nv[:i]][nv[:j]] = false
+          @enemys_obj[nv[:i]][nv[:j]].update_attributes(status: EnemyLeukocyte::DIED)
+        end
+        @moved_cleaner << { y:t[0], x:t[1], way: self.get_way(t,{y: v[:i], x: v[:j]}) }
       end
+      @cleaner_obj[v[:i]][v[:j]].update_attributes(y: nv[:i], x: nv[:j])
     end
   end
 
   def convert_step
-    enemys = UserFungus.where(game_stage_id: self.id).all(lock: true)
-    @enemys = Array.new(8).map{ Array.new(8, false) }
-    8.times do |x|
-      8.times do |y|
-        @enemys[y][x] << false
+    field = GameMap.where(game_stage_id: self.id).all
+    # TODO lock for stage?
+    @enemys_lock = UserFungus.where(game_stage_id: self.id).all(lock: true)
+    @enemys = Array.new(ONE_LINE).map{ Array.new(ONE_LINE, false) }
+    @enemys_obj = Array.new(ONE_LINE).map{ Array.new(ONE_LINE, false) }
+    @field = Array.new(ONE_LINE).map{ Array.new(ONE_LINE, false) }
+    @field_obj = Array.new(ONE_LINE).map{ Array.new(ONE_LINE, false) }
+    field.each do |f|
+      @field[f.y][f.x] = false
+      @field_obj[f.y][f.x] = f
+    end
+    ONE_LINE.times do |x|
+      ONE_LINE.times do |y|
+        @enemys[y][x] = false
+        @field[y][x] = false
+        @field[y][x] = true if @field_obj[y][x] and @field_obj[y][x].type == Map::MAP_TYPE_WALL
       end
     end
-    enemys.each do |e|
-      @enemys[e.y][e.x] << true
+    @enemys_lock.each do |e|
+      @enemys[e.y][e.x] = true
+      @enemys_obj[e.y][e.x] = e
     end
     cleaner = EnemyLeukocyte.where(game_stage_id: self.id).all(lock: true)
     @cleaner = []
+    @cleaner_obj = Array.new(ONE_LINE).map{ Array.new(ONE_LINE, false) }
     cleaner.each do |e|
-      @cleaner << {i: e.y, j: e.x}
+      @cleaner << {i: e.y, j: e.x, object_id: e.id}
+      @cleaner_obj[e.y][e.x] = e
     end
+    p @cleaner
+    p @cleaner_obj
+  end
+
+  def convert_structure
+  {
+    newvirus: {x: @new_fungus.x, y: @new_fungus.y},
+    leukocyte: @moved_cleaner,
+    virus: @moved_enemy
+  }
   end
 end

@@ -9,4 +9,12 @@ class UserGame < ActiveRecord::Base
       game_map: map.convert_collection
     }
   end
+
+  def next_turn(fungus_x, fungus_y)
+    game_stage = GameStage.where(id: self.game_stage_id).first.set_and_step(fungus_x, fungus_y)
+    {
+      state: "playing",
+      game_stage: game_stage
+    }
+  end
 end
