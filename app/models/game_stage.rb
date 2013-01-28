@@ -46,7 +46,7 @@ class GameStage < ActiveRecord::Base
 
 
   def play_status
-    fungus = UserFungus.where(game_stage_id: self.id).count(lock: "LOCK IN SHARE MODE")
+    fungus = UserFungus.where(game_stage_id: self.id, status: UserFungus::LIFE).count(lock: "LOCK IN SHARE MODE")
     return STATE_GAMEOVER if fungus >= CLEAR_RATION
     return STATE_PLAYING
   end
@@ -100,6 +100,7 @@ class GameStage < ActiveRecord::Base
         @moved_enemy << { y:t[0], x:t[1], way: self.get_way(t,{y: x[:i], x: x[:j]}) }
         duplicate_at(t[0], t[1])
       end
+
     }
 
 
