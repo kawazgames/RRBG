@@ -20,7 +20,7 @@ field = <<EOM.lines.map{|x| x.chomp.split(//).map{|x| x == '#'} }
 EOM
 stage = Stage.where(id: 1).first_or_create
 field.each_with_index do |line, y|
-  line.each do |x|
+  line.each_with_index do |row, x|
     if y
       type = Map::MAP_TYPE_WALL
     else
