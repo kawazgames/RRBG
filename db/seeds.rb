@@ -51,10 +51,10 @@ Authentication.create! do |a|
   a.user_id = 1
   a.provider = "twitter"
   a.uid = "piBKQpd2e73Hceeknc39Hwizt_aa7dySPsEm9PeN"
-  a.screen_name = 'dummy1203'
+  a.screen_name = 'kingdom'
   a.access_token = 'piBKQpd2e73Hceeknc39Hwizt_aa7dySPsEm9PeN'
   a.access_secret = 'piBKQpd2e73Hceeknc39Hwizt_aa7dySPsEm9PeN'
-  a.bio = '自己紹介'
+  a.bio = '菌NGDOM'
   a.image_url = 'images/dummy.png'
   a.web_url = 'http://google.com/'
   a.last_tid = '1293859618723'
@@ -143,7 +143,7 @@ Authentication.create! do |a|
   a.access_token = 'asldkfjaieor'
   a.access_secret = 'lakjfsdlkjafda'
   a.bio = 'bio'
-  a.image_url = '..images/dummy.png'
+  a.image_url = '../images/dummy.png'
   a.web_url = 'http://google.com/'
   a.last_tid = '1293859618723'
 end
@@ -156,7 +156,7 @@ Authentication.create! do |a|
   a.access_token = 'asldkfjaieor'
   a.access_secret = 'lakjfsdlkjafda'
   a.bio = 'bio'
-  a.image_url = '..images/dummy.png'
+  a.image_url = '../images/dummy.png'
   a.web_url = 'http://google.com/'
   a.last_tid = '1293859618723'
 end
@@ -169,7 +169,7 @@ Authentication.create! do |a|
   a.access_token = 'asldkfjaieor'
   a.access_secret = 'lakjfsdlkjafda'
   a.bio = 'bio'
-  a.image_url = '..images/dummy.png'
+  a.image_url = '../images/dummy.png'
   a.web_url = 'http://yahoo.com/'
   a.last_tid = '1293859618723'
 end
@@ -182,7 +182,7 @@ Authentication.create! do |a|
   a.access_token = 'asldkfjaieor'
   a.access_secret = 'lakjfsdlkjafda'
   a.bio = 'bio'
-  a.image_url = '..images/dummy.png'
+  a.image_url = '../images/dummy.png'
   a.web_url = 'http://google.com/'
   a.last_tid = '1293859618723'
 end
@@ -194,7 +194,7 @@ Authentication.create! do |a|
   a.access_token = 'asldkfjaieor'
   a.access_secret = 'lakjfsdlkjafda'
   a.bio = 'bio'
-  a.image_url = '..images/dummy.png'
+  a.image_url = '../images/dummy.png'
   a.web_url = 'http://google.com/'
   a.last_tid = '1293859618723'
 end
@@ -206,7 +206,7 @@ Authentication.create! do |a|
   a.access_token = 'asldkfjaieor'
   a.access_secret = 'lakjfsdlkjafda'
   a.bio = 'bio'
-  a.image_url = '..images/dummy.png'
+  a.image_url = '../images/dummy.png'
   a.web_url = 'http://google.com/'
   a.last_tid = '1293859618723'
 end
@@ -218,7 +218,7 @@ Authentication.create! do |a|
   a.access_token = 'asldkfjaieor'
   a.access_secret = 'lakjfsdlkjafda'
   a.bio = 'bio'
-  a.image_url = '..images/dummy.png'
+  a.image_url = '../images/dummy.png'
   a.web_url = 'http://google.com/'
   a.last_tid = '1293859618723'
 end
@@ -230,7 +230,7 @@ Authentication.create! do |a|
   a.access_token = 'asldkfjaieor'
   a.access_secret = 'lakjfsdlkjafda'
   a.bio = 'bio'
-  a.image_url = '..images/dummy.png'
+  a.image_url = '../images/dummy.png'
   a.web_url = 'http://google.com/'
   a.last_tid = '1293859618723'
 end
@@ -242,10 +242,11 @@ Authentication.create! do |a|
   a.access_token = 'asldkfjaieor'
   a.access_secret = 'lakjfsdlkjafda'
   a.bio = 'bio'
-  a.image_url = '..images/dummy.png'
+  a.image_url = '../images/dummy.png'
   a.web_url = 'http://google.com/'
   a.last_tid = '1293859618723'
 end
+
 Authentication.create! do |a|
   a.user_id = 12
   a.provider = "aaosidfweor#{rand}"
@@ -254,7 +255,7 @@ Authentication.create! do |a|
   a.access_token = 'asldkfjaieor'
   a.access_secret = 'lakjfsdlkjafda'
   a.bio = 'bio'
-  a.image_url = '..images/dummy.png'
+  a.image_url = '../images/dummy.png'
   a.web_url = 'http://google.com/'
   a.last_tid = '1293859618723'
 end
@@ -280,41 +281,42 @@ end
 Rank.create! do |r|
   r.rank = 4
   r.score = 4000000
-  r.user_id = 6
+  r.user_id = 4
 end
 
 Rank.create! do |r|
   r.rank = 5
   r.score = 500000
-  r.user_id = 7
+  r.user_id = 5
 end
 
 Rank.create! do |r|
   r.rank = 6
   r.score =60000
-  r.user_id = 8
+  r.user_id = 6
 end
 
 Rank.create! do |r|
   r.rank = 7
   r.score = 7000
+  r.user_id = 1
 end
 
 Rank.create! do |r|
   r.rank = 8
   r.score = 800
-  r.user_id = 9
+  r.user_id = 8
 end
 
 Rank.create! do |r|
   r.rank = 9
   r.score = 90
-  r.user_id = 11
+  r.user_id = 1
 end
 
 Rank.create! do |r|
   r.rank = 10
   r.score = 10
-  r.user_id = 12
+  r.user_id = 1
 end
 
