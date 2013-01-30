@@ -25,9 +25,7 @@ class GameStage < ActiveRecord::Base
   def self.create_copy id
     self.transaction do
       @res = self.create!
-      Map.where(stage_id: id).all.each do |e|
-        GameMap.create!(game_stage: @res, x: e.x, y: e.y, type: e.type)
-      end
+      Map.where(stage_id: id).pickin(GameMap, {game_stage_id: @res.id, type: :type, x: :x, y: :y, created_at: :created_at, updated_at: :updated_at})
     end
     @res
   end

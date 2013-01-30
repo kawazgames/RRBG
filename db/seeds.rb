@@ -21,16 +21,17 @@ EOM
 stage = Stage.where(id: 1).first_or_create
 field.each_with_index do |line, y|
   line.each_with_index do |row, x|
-    if y
+    if row
       type = Map::MAP_TYPE_WALL
     else
       type = Map::MAP_TYPE_NONE
     end
-    Map.where(stage_id: stage.id, x: x, y: y).first_or_create(
+    map = Map.where(stage_id: stage.id, x: x, y: y).first_or_initialize(
       stage: stage,
       type: type,
       x: x,
       y: y
     )
+    map.save!
   end
 end
