@@ -1,1 +1,14 @@
 <div id="enchant-stage"></div>
+
+<% content_for :unauthorized do %>
+  <div class="overlay">
+    <div>
+      <p>
+        <a href="users/auth/twitter">
+          Twitter のアカウントでログイン！
+        </a>
+      </p>
+      <p>※ランキングの集計のためだけに使われます。</p>
+    </div>
+  </div>
+<% end %>
