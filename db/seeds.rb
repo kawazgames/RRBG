@@ -71,7 +71,7 @@ end
 
 
 User.create! do |u|
-  u.sign_in_count = 0
+  u.sign_in_count = 3
   u.current_sign_in_at = Time.now.strftime("%Y-%m-%d %H:%M:%S")
   u.last_sign_in_at = Time.now.strftime("%Y-%m-%d %H:%M:%S")
   u.current_sign_in_ip = "221.333.222.111"
@@ -79,7 +79,7 @@ User.create! do |u|
 end
 
 User.create! do |u|
-  u.sign_in_count = 2
+  u.sign_in_count = 4
   u.current_sign_in_at = Time.now.strftime("%Y-%m-%d %H:%M:%S")
   u.last_sign_in_at = Time.now.strftime("%Y-%m-%d %H:%M:%S")
   u.current_sign_in_ip = "221.333.222.111"
@@ -87,7 +87,7 @@ User.create! do |u|
 end
 
 User.create! do |u|
-  u.sign_in_count = 8
+  u.sign_in_count = 5
   u.current_sign_in_at = Time.now.strftime("%Y-%m-%d %H:%M:%S")
   u.last_sign_in_at = Time.now.strftime("%Y-%m-%d %H:%M:%S")
   u.current_sign_in_ip = "384.983.333.221"
@@ -95,7 +95,7 @@ User.create! do |u|
 end
 
 User.create! do |u|
-  u.sign_in_count = 3
+  u.sign_in_count =6
   u.current_sign_in_at = Time.now.strftime("%Y-%m-%d %H:%M:%S")
   u.last_sign_in_at = Time.now.strftime("%Y-%m-%d %H:%M:%S")
   u.current_sign_in_ip = "192.168.22.111"
@@ -103,7 +103,15 @@ User.create! do |u|
 end
 
 User.create! do |u|
-  u.sign_in_count = 3
+  u.sign_in_count = 7
+  u.current_sign_in_at = Time.now.strftime("%Y-%m-%d %H:%M:%S")
+  u.last_sign_in_at = Time.now.strftime("%Y-%m-%d %H:%M:%S")
+  u.current_sign_in_ip = "192.168.22.111"
+  u.last_sign_in_ip = "999.333.444.555"
+end
+
+User.create! do |u|
+  u.sign_in_count = 8
   u.current_sign_in_at = Time.now.strftime("%Y-%m-%d %H:%M:%S")
   u.last_sign_in_at = Time.now.strftime("%Y-%m-%d %H:%M:%S")
   u.current_sign_in_ip = "192.168.22.111"
@@ -118,17 +126,9 @@ User.create! do |u|
   u.last_sign_in_ip = "999.333.444.555"
 end
 
-User.create! do |u|
-  u.sign_in_count = 13
-  u.current_sign_in_at = Time.now.strftime("%Y-%m-%d %H:%M:%S")
-  u.last_sign_in_at = Time.now.strftime("%Y-%m-%d %H:%M:%S")
-  u.current_sign_in_ip = "192.168.22.111"
-  u.last_sign_in_ip = "999.333.444.555"
-end
-
 
 User.create! do |u|
-  u.sign_in_count = 31
+  u.sign_in_count = 10
   u.current_sign_in_at = Time.now.strftime("%Y-%m-%d %H:%M:%S")
   u.last_sign_in_at = Time.now.strftime("%Y-%m-%d %H:%M:%S")
   u.current_sign_in_ip = "192.168.22.111"
@@ -136,7 +136,7 @@ User.create! do |u|
 end
 
 Authentication.create! do |a|
-  a.user_id = 1
+  a.user_id = 11
   a.provider = "aa#{rand}"
   a.uid = 'a;lskejroawierjaksdjfiwerhjdsfhgiuert#{rand}'
   a.screen_name = "sccafold"
@@ -175,7 +175,7 @@ Authentication.create! do |a|
 end
 
 Authentication.create! do |a|
-  a.user_id = 6
+  a.user_id = 4
   a.provider = "aaosidfweor#{rand}"
   a.uid = "ua;1290374jbxtlskejroawierjaksdjfiwerhjdsfhgiuert#{rand}"
   a.screen_name = 'yuggr9'
@@ -187,7 +187,7 @@ Authentication.create! do |a|
   a.last_tid = '1293859618723'
 end
 Authentication.create! do |a|
-  a.user_id = 7
+  a.user_id = 5
   a.provider = "aaosidfweor#{rand}"
   a.uid = "ua;1290374jboawierjaksdjfiwerhjdsfhgiuert#{rand}"
   a.screen_name = 'yuggr7'
@@ -199,7 +199,7 @@ Authentication.create! do |a|
   a.last_tid = '1293859618723'
 end
 Authentication.create! do |a|
-  a.user_id = 8
+  a.user_id = 6
   a.provider = "aaosidfweor#{rand}"
   a.uid = "ua;aiodfjoasd1290374jbcvi7zxtlskejroawierjaksdjfiwerhjdsfhgiuert#{rand}"
   a.screen_name = 'yuggr8'
@@ -211,7 +211,7 @@ Authentication.create! do |a|
   a.last_tid = '1293859618723'
 end
 Authentication.create! do |a|
-  a.user_id = 9
+  a.user_id = 7
   a.provider = "aaosidfweor#{rand}"
   a.uid = "ua;1290374jb30849324cvi7zxtlskejroawierjaksdjfiwerhjdsfhgiuert#{rand}"
   a.screen_name = 'yuggr109'
@@ -223,7 +223,7 @@ Authentication.create! do |a|
   a.last_tid = '1293859618723'
 end
 Authentication.create! do |a|
-  a.user_id = 10
+  a.user_id = 8
   a.provider = "aaosidfweor#{rand}"
   a.uid = "ua;1290374jbcvi7zxtlskejroawierjaksdjfiwerhjdsfhgiuert#{rand}"
   a.screen_name = 'yuggr19'
@@ -235,7 +235,7 @@ Authentication.create! do |a|
   a.last_tid = '1293859618723'
 end
 Authentication.create! do |a|
-  a.user_id = 11
+  a.user_id = 9
   a.provider = "aaosidfweor#{rand}"
   a.uid = "ua1290374jbcvi7zxtlskejroawierjaksdjfiwerhjdsfhgiuert#{rand}"
   a.screen_name = 'yuggr9'
@@ -248,7 +248,7 @@ Authentication.create! do |a|
 end
 
 Authentication.create! do |a|
-  a.user_id = 12
+  a.user_id = 10
   a.provider = "aaosidfweor#{rand}"
   a.uid = "ua1290374jbcvi7zxtlskejroawierjaksdjfiwerhjdsfhgiuert#{rand}"
   a.screen_name = 'yuggr9'
@@ -281,13 +281,13 @@ end
 Rank.create! do |r|
   r.rank = 4
   r.score = 4000000
-  r.user_id = 4
+  r.user_id = 6
 end
 
 Rank.create! do |r|
   r.rank = 5
   r.score = 500000
-  r.user_id = 5
+  r.user_id = 6
 end
 
 Rank.create! do |r|
@@ -305,7 +305,7 @@ end
 Rank.create! do |r|
   r.rank = 8
   r.score = 800
-  r.user_id = 8
+  r.user_id = 1
 end
 
 Rank.create! do |r|
