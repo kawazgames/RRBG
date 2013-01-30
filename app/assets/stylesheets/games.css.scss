@@ -1,3 +1,23 @@
 // Place all the styles related to the games controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+
+.overlay {
+  min-height: 700px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(3,3,3,0.7);
+  z-index: 1000;
+  > div {
+    width: 400px;
+    padding: 50px 0;
+    margin: 250px auto;
+    text-align: center;
+    background-color: #eee;
+    border-radius: 10px;
+    box-shadow: 5px 5px 10px #000;
+  }
+}
