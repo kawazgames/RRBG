@@ -32,8 +32,8 @@ class GameMap < ActiveRecord::Base
   def convert_type
     enemy = self.enemy.where(x: self.x, y: self.y).first(lock: true)
     virus = self.virus.where(x: self.x, y: self.y).first(lock: true)
-    return Map::MAP_TYPE_USER_FUNGS if enemy
-    return Map::MAP_TYPE_ENEMY_LEUKOCYTEL if virus
+    return Map::MAP_TYPE_USER_FUNGS if virus
+    return Map::MAP_TYPE_ENEMY_LEUKOCYTEL if enemy
     return self.type
   end
 
