@@ -111,18 +111,23 @@ class GameStage < ActiveRecord::Base
 
     @moved_cleaner = []
     nv = {}
+    way = WAY_STOP
     @cleaner.each do |v|
+      died_ids = []
       @enemys[v[:i]][v[:j]] = false
-      10.times do
+      100.times do
         t = nears(v[:i], v[:j]).select{|x| !@field[x[0]][x[1]] }.sample(1)[0]
         nv[:i] = t[0]
         nv[:j] = t[1]
         if @enemys_obj[nv[:i]][nv[:j]]
           @enemys[nv[:i]][nv[:j]] = false
-          @enemys_obj[nv[:i]][nv[:j]].update_attributes!(status: EnemyLeukocyte::DIED)
+          died_ids << @enemys_obj[nv[:i]][nv[:j]].id
+          @enemys_obj[nv[:i]][nv[:j]] = nil
         end
-        @moved_cleaner << { y:t[0], x:t[1], way: self.get_way(t,{y: v[:i], x: v[:j]}) }
+        way = self.get_way(t,{y: v[:i], x: v[:j]})
       end
+      @moved_cleaner << { y: nv[:i], x: nv[:j], way: way }
+      UserFungus.where(id: died_ids).update_all(status: EnemyLeukocyte::DIED) unless died_ids.empty?
       @cleaner_obj[v[:i]][v[:j]].update_attributes!(y: nv[:i], x: nv[:j])
     end
   end
