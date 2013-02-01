@@ -71,14 +71,13 @@ class GameStage < ActiveRecord::Base
     t = near_spaces(i,j).sample(1)[0]
     @enemys[t[0]][t[1]] = true if t
     UserFungus.create! game_stage: self, y: t[0], x: t[1]
-    @new_fungus << {y: t[0], x: t[1]}
+    @new_fungus << UserFungus.new(game_stage: self, y: t[0], x: t[1])
   end
 
   def set_and_step(y, x)
     GameStage.transaction do
       @new_fungus = []
-      new_fungus = UserFungus.create! game_stage: self, y: y, x: x
-      @new_fungus << {x: new_fungus.x, y: new_fungus.y}
+      @new_fungus << UserFungus.new(game_stage: self, y: y, x: x)
       self.step()
     end
     self.convert_structure
@@ -108,6 +107,8 @@ class GameStage < ActiveRecord::Base
 
     }
 
+    # TODO use activerecord-import
+    @new_fungus.map{|m| m.save! }
 
     @moved_cleaner = []
     nv = {}
@@ -171,7 +172,7 @@ class GameStage < ActiveRecord::Base
 
   def convert_structure
   {
-    newvirus: @new_fungus,
+    newvirus: @new_fungus.map{|m| {x: m.x, y: m.y}},
     leukocyte: @moved_cleaner,
     virus: @moved_enemy
   }
