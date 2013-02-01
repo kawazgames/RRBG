@@ -52,11 +52,11 @@ class GameStage < ActiveRecord::Base
   def get_way (v,t)
     y = t[:y] - v[0]
     x = t[:x] - v[1]
-    return 0 if y == -1
-    return 1 if y == 1
-    return 2 if x == -1
-    return 3 if x == 1
-    4
+    return WAY_UP if y == -1
+    return WAY_DOWN if y == 1
+    return WAY_LEFT if x == -1
+    return WAY_RIGHT if x == 1
+    WAY_STOP
   end
 
   def nears(i,j)
@@ -112,11 +112,11 @@ class GameStage < ActiveRecord::Base
 
     @moved_cleaner = []
     nv = {}
-    way = WAY_STOP
     @cleaner.each do |v|
+    way = []
       died_ids = []
       @enemys[v[:i]][v[:j]] = false
-      100.times do
+      10.times do
         t = nears(v[:i], v[:j]).select{|x| !@field[x[0]][x[1]] }.sample(1)[0]
         nv[:i] = t[0]
         nv[:j] = t[1]
@@ -125,7 +125,7 @@ class GameStage < ActiveRecord::Base
           died_ids << @enemys_obj[nv[:i]][nv[:j]].id
           @enemys_obj[nv[:i]][nv[:j]] = nil
         end
-        way = self.get_way(t,{y: v[:i], x: v[:j]})
+        way << self.get_way(t,{y: v[:i], x: v[:j]})
       end
       @moved_cleaner << { y: nv[:i], x: nv[:j], way: way }
       UserFungus.where(id: died_ids).update_all(status: EnemyLeukocyte::DIED) unless died_ids.empty?
