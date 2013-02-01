@@ -25,7 +25,7 @@ class GameStage < ActiveRecord::Base
   def self.create_copy id
     self.transaction do
       @res = self.create!
-      Map.where(stage_id: id).pickin(GameMap, {game_stage_id: @res.id, type: :type, x: :x, y: :y, created_at: :created_at, updated_at: :updated_at})
+      Map.where(stage_id: id).pickin(GameMap, {game_stage_id: @res.id}, [:id])
     end
     @res
   end
@@ -70,11 +70,15 @@ class GameStage < ActiveRecord::Base
   def duplicate_at(i,j)
     t = near_spaces(i,j).sample(1)[0]
     @enemys[t[0]][t[1]] = true if t
+    UserFungus.create! game_stage: self, y: t[0], x: t[1]
+    @new_fungus << {y: t[0], x: t[1]}
   end
 
   def set_and_step(y, x)
     GameStage.transaction do
-      @new_fungus = UserFungus.create! game_stage: self, y: y, x: x
+      @new_fungus = []
+      new_fungus = UserFungus.create! game_stage: self, y: y, x: x
+      @new_fungus << {x: new_fungus.x, y: new_fungus.y}
       self.step()
     end
     self.convert_structure
@@ -94,9 +98,12 @@ class GameStage < ActiveRecord::Base
       if t
         @enemys[t[0]][t[1]] = true
         @enemys[x[:i]][x[:j]] = false
-        @enemys_obj[x[:i]][x[:j]].update_attributes(y: t[0], x: t[1])
-        @moved_enemy << { y:t[0], x:t[1], way: self.get_way(t,{y: x[:i], x: x[:j]}) }
+        @enemys_obj[x[:i]][x[:j]].update_attributes!(y: t[0], x: t[1])
+        @moved_enemy << { y:t[0], x:t[1], way: WAY_STOP }
         duplicate_at(t[0], t[1])
+      else
+        @moved_enemy << { y:x[:i], x:x[:j], way: WAY_STOP }
+
       end
 
     }
@@ -112,11 +119,11 @@ class GameStage < ActiveRecord::Base
         nv[:j] = t[1]
         if @enemys_obj[nv[:i]][nv[:j]]
           @enemys[nv[:i]][nv[:j]] = false
-          @enemys_obj[nv[:i]][nv[:j]].update_attributes(status: EnemyLeukocyte::DIED)
+          @enemys_obj[nv[:i]][nv[:j]].update_attributes!(status: EnemyLeukocyte::DIED)
         end
         @moved_cleaner << { y:t[0], x:t[1], way: self.get_way(t,{y: v[:i], x: v[:j]}) }
       end
-      @cleaner_obj[v[:i]][v[:j]].update_attributes(y: nv[:i], x: nv[:j])
+      @cleaner_obj[v[:i]][v[:j]].update_attributes!(y: nv[:i], x: nv[:j])
     end
   end
 
@@ -127,18 +134,19 @@ class GameStage < ActiveRecord::Base
     @enemys = Array.new(ONE_LINE).map{ Array.new(ONE_LINE, false) }
     @enemys_obj = Array.new(ONE_LINE).map{ Array.new(ONE_LINE, false) }
     @field = Array.new(ONE_LINE).map{ Array.new(ONE_LINE, false) }
-    @field_obj = Array.new(ONE_LINE).map{ Array.new(ONE_LINE, false) }
+    @field_type = Array.new(ONE_LINE).map{ Array.new(ONE_LINE, false) }
     field.each do |f|
       @field[f.y][f.x] = false
-      @field_obj[f.y][f.x] = f
+      @field_type[f.y][f.x] = f.type
     end
     ONE_LINE.times do |x|
       ONE_LINE.times do |y|
         @enemys[y][x] = false
         @field[y][x] = false
-        @field[y][x] = true if @field_obj[y][x] and @field_obj[y][x].type == Map::MAP_TYPE_WALL
+        @field[y][x] = true if @field_type[y][x] == Map::MAP_TYPE_WALL
       end
     end
+
     @enemys_lock.each do |e|
       if e.y and e.x
         @enemys[e.y][e.x] = true
@@ -158,7 +166,7 @@ class GameStage < ActiveRecord::Base
 
   def convert_structure
   {
-    newvirus: {x: @new_fungus.x, y: @new_fungus.y},
+    newvirus: @new_fungus,
     leukocyte: @moved_cleaner,
     virus: @moved_enemy
   }
