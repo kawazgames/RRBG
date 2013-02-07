@@ -3,8 +3,15 @@ class GamesController < ApplicationController
   def new
     gs = GameStage.create_copy_with_random
     ug = UserGame.create! user: current_user, game_stage: gs, status: 0
-    uf = UserFungus.create! game_stage: gs, x:1, y:1
-    el = EnemyLeukocyte.create! game_stage: gs, x:1, y:2
+    EnemyLeukocyte.create! game_stage: gs, x:6, y:6
+    EnemyLeukocyte.create! game_stage: gs, x:4, y:2
+    EnemyLeukocyte.create! game_stage: gs, x:1, y:2
+    EnemyLeukocyte.create! game_stage: gs, x:8, y:4
+
+    EnemyLeukocyte.create! game_stage: gs, x:8, y:8
+    EnemyLeukocyte.create! game_stage: gs, x:4, y:4
+    EnemyLeukocyte.create! game_stage: gs, x:5, y:7
+
 
     respond_with gs.convert_collection
   end
