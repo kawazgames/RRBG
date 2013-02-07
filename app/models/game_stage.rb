@@ -12,6 +12,8 @@ class GameStage < ActiveRecord::Base
   STATE_GAMEOVER = 1
   CLEAR_RATION = 70
 
+  MOVE_LEUKOCYTE = 50
+
   def self.create_copy_with_random
     size = Stage.count
     if size > 1
@@ -50,8 +52,8 @@ class GameStage < ActiveRecord::Base
   end
 
   def get_way (v,t)
-    y = t[:y] - v[0]
-    x = t[:x] - v[1]
+    y = t[:y] - v[:y]
+    x = t[:x] - v[:x]
     return WAY_UP if y == -1
     return WAY_DOWN if y == 1
     return WAY_LEFT if x == -1
@@ -64,7 +66,9 @@ class GameStage < ActiveRecord::Base
   end
 
   def near_spaces(i,j)
-    nears(i,j).select{|a,b| !@enemys[a][b] && !@field[a][b] }
+    nears(i,j).select do |e|
+      !@enemys[e[0]][e[1]] && !@field[e[0]][e[1]]
+    end
   end
 
   def duplicate_at(i,j)
@@ -111,25 +115,26 @@ class GameStage < ActiveRecord::Base
     @new_fungus.map{|m| m.save! }
 
     @moved_cleaner = []
-    nv = {}
-    @cleaner.each do |v|
+    @cleaner.each_with_index do |v, ci|
     way = []
+    nv = {}
+    fv = v
       died_ids = []
-      @enemys[v[:i]][v[:j]] = false
-      10.times do
-        t = nears(v[:i], v[:j]).select{|x| !@field[x[0]][x[1]] }.sample(1)[0]
-        nv[:i] = t[0]
-        nv[:j] = t[1]
-        if @enemys_obj[nv[:i]][nv[:j]]
-          @enemys[nv[:i]][nv[:j]] = false
-          died_ids << @enemys_obj[nv[:i]][nv[:j]].id
-          @enemys_obj[nv[:i]][nv[:j]] = nil
+      @enemys[v[:y]][v[:x]] = false
+      MOVE_LEUKOCYTE.times do
+        t = nears(v[:y], v[:x]).select{|x| !@field[x[0]][x[1]] }.sample(1)[0]
+        nv = { y: t[0], x: t[1] }
+        if @enemys_obj[nv[:y]][nv[:x]]
+          @enemys[nv[:y]][nv[:x]] = false
+          died_ids << @enemys_obj[nv[:y]][nv[:x]].id
+          @enemys_obj[nv[:y]][nv[:x]] = nil
         end
-        way << self.get_way(t,{y: v[:i], x: v[:j]})
+        way << self.get_way({y: v[:y], x: v[:x]}, {y: t[0], x: t[1]})
+        v = nv
       end
-      @moved_cleaner << { y: nv[:i], x: nv[:j], way: way }
+      @moved_cleaner << { y: fv[:y], x: fv[:x], way: way }
       UserFungus.where(id: died_ids).update_all(status: EnemyLeukocyte::DIED) unless died_ids.empty?
-      @cleaner_obj[v[:i]][v[:j]].update_attributes!(y: nv[:i], x: nv[:j])
+      @cleaner_obj[fv[:y]][fv[:x]].update_attributes!(y: nv[:y], x: nv[:x])
     end
   end
 
@@ -140,16 +145,15 @@ class GameStage < ActiveRecord::Base
     @enemys = Array.new(ONE_LINE).map{ Array.new(ONE_LINE, false) }
     @enemys_obj = Array.new(ONE_LINE).map{ Array.new(ONE_LINE, false) }
     @field = Array.new(ONE_LINE).map{ Array.new(ONE_LINE, false) }
-    @field_type = Array.new(ONE_LINE).map{ Array.new(ONE_LINE, false) }
+    @field_obj = Array.new(ONE_LINE).map{ Array.new(ONE_LINE, false) }
     field.each do |f|
       @field[f.y][f.x] = false
-      @field_type[f.y][f.x] = f.type
+      @field_obj[f.y][f.x] = f
     end
     ONE_LINE.times do |x|
       ONE_LINE.times do |y|
         @enemys[y][x] = false
-        @field[y][x] = false
-        @field[y][x] = true if @field_type[y][x] == Map::MAP_TYPE_WALL
+        @field[y][x] = @field_obj[y][x].is_wall?
       end
     end
 
@@ -164,10 +168,9 @@ class GameStage < ActiveRecord::Base
     @cleaner = []
     @cleaner_obj = Array.new(ONE_LINE).map{ Array.new(ONE_LINE, false) }
     cleaner.each do |e|
-      @cleaner << {i: e.y, j: e.x, object_id: e.id}
+      @cleaner << {y: e.y, x: e.x, object_id: e.id}
       @cleaner_obj[e.y][e.x] = e
     end
-    p @cleaner_obj
   end
 
   def convert_structure
