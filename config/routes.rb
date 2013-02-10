@@ -9,8 +9,7 @@ RRBG::Application.routes.draw do
      post :next_turn
    end
  end
-  match "games/ranking", :to => 'ranking#index' ,:via =>:get
-  match "games/ranking", :to => 'ranking#save' ,:via =>:post
+ resources :rankings
   # The priority is based upon order of creation:
   # first created -> highest priority.
 
