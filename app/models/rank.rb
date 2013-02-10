@@ -6,9 +6,7 @@ class Rank < ActiveRecord::Base
   # @return [JSON]
   def self.find_all_to_json
     result = {}
-    result[:ranking]  = []
-    ranking = repack_rank_attr_to_array Rank.find(:all)
-    result[:ranking].push ranking
+    result[:ranking] = repack_rank_attr_to_array Rank.find(:all)
     result.to_json
   end
 
@@ -29,7 +27,7 @@ class Rank < ActiveRecord::Base
         # DB整合が確かならばここには来ないはず
         raise ArgumentError, "invalid argument Database => user_id"
       end
-      ranking.push rank
+      ranking << rank
     end
     ranking
   end
