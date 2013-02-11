@@ -17,8 +17,9 @@ class GamesController < ApplicationController
   end
 
   def next_turn
-    ug =  UserGame.where(id: params[:id], user_id: current_user.id).first
-    res =  ug.next_turn(params[:virus][:position][:y],params[:virus][:position][:x])
+    gs = GameStage.find params[:id]
+    ug = UserGame.where(game_stage_id: gs.id, user_id: current_user.id).first
+    res = ug.next_turn(params[:virus][:position][:y],params[:virus][:position][:x])
     respond_with res, location: nil
   end
 end
