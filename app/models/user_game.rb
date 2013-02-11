@@ -24,6 +24,10 @@ class UserGame < ActiveRecord::Base
       ug.score = ug.score + @score
       ug.save!
       @score = ug.score
+      if game_stage.play_status == GameStage::STATE_GAMEOVER
+        # Save score
+        Rank.save_score @score, self.user
+      end
     end
     {
       state: responed[game_stage.play_status],

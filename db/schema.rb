@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130119195833) do
+ActiveRecord::Schema.define(:version => 20130127001201) do
 
   create_table "authentications", :force => true do |t|
     t.integer  "user_id"
@@ -30,6 +30,49 @@ ActiveRecord::Schema.define(:version => 20130119195833) do
 
   add_index "authentications", ["provider", "uid"], :name => "index_authentications_on_provider_and_uid", :unique => true
   add_index "authentications", ["user_id"], :name => "index_authentications_on_user_id"
+
+  create_table "game_maps", :force => true do |t|
+    t.integer  "game_stage_id"
+    t.integer  "type"
+    t.integer  "x"
+    t.integer  "y"
+    t.datetime "created_at",    :null => false
+    t.datetime "updated_at",    :null => false
+  end
+
+  add_index "game_maps", ["game_stage_id"], :name => "index_game_maps_on_game_stage_id"
+
+  create_table "game_stages", :force => true do |t|
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  create_table "maps", :force => true do |t|
+    t.integer  "stage_id"
+    t.integer  "type"
+    t.integer  "x"
+    t.integer  "y"
+    t.string   "move_type"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "maps", ["stage_id"], :name => "index_maps_on_stage_id"
+
+  create_table "ranks", :force => true do |t|
+    t.integer  "rank"
+    t.integer  "score"
+    t.integer  "user_id"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "ranks", ["user_id"], :name => "index_ranks_on_user_id"
+
+  create_table "stages", :force => true do |t|
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
 
   create_table "users", :force => true do |t|
     t.integer  "sign_in_count",      :default => 0
