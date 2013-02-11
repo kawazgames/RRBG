@@ -58,7 +58,7 @@ class Rank < ActiveRecord::Base
       unless @temp_rank == 0
         ranks[@temp_rank].update_attributes!({score:score,user_id:user.id})
       end
-      result = []
+      result = {}
       result[:ranking] =  repack_rank_attr_to_array ranks
       return result.to_json
     }
