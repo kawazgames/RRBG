@@ -78,7 +78,7 @@ do ->
     scene.init = ->
       $.ajax
         type: 'get'
-        url: '/games/ranking'
+        url: '/rankings'
         data: null
         cache: false
         dataType: "json"
