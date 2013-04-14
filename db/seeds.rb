@@ -38,6 +38,14 @@ field.each_with_index do |line, y|
   end
 end
 
+pt_max = 1001
+pt_max.times.each do |pt_id|
+  pt = HighScorePartition.where(id: (pt_id + 1)).first_or_initialize
+  pt.min = pt_id * 1000
+  pt.max = (((pt_id + 1) * 1000) - 1)
+  pt.save!
+end
+
 # dummy user
 User.create! do |u|
   u.sign_in_count = 0
